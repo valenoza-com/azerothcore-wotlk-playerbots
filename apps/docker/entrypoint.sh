@@ -39,6 +39,16 @@ fi
 # -v == be verbose
 cp -rnv /azerothcore/env/ref/etc/* "$CONF_DIR"
 
+# Installed modules provide their configuration as *.conf.dist files in a
+# nested modules directory. Materialize missing module configs without
+# overwriting user-managed files on the persistent configuration volume.
+if [[ -d "$CONF_DIR/modules" ]]; then
+    while IFS= read -r -d '' MODULE_CONF_DIST; do
+        MODULE_CONF="${MODULE_CONF_DIST%.dist}"
+        [[ -f "$MODULE_CONF" ]] || cp -v "$MODULE_CONF_DIST" "$MODULE_CONF"
+    done < <(find "$CONF_DIR/modules" -type f -name '*.conf.dist' -print0)
+fi
+
 CONF="$CONF_DIR/$ACORE_COMPONENT.conf"
 CONF_DIST="$CONF_DIR/$ACORE_COMPONENT.conf.dist"
 

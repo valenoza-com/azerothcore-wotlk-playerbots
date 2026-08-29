@@ -187,6 +187,11 @@ COPY --chown=$DOCKER_USER:$DOCKER_USER \
      --from=build \
      /azerothcore/env/dist/bin/worldserver /azerothcore/env/dist/bin/worldserver
 
+# Playerbots loads its dedicated database schema from the module source tree
+# when the playerbots database is empty.
+COPY --chown=$DOCKER_USER:$DOCKER_USER \
+     modules modules
+
 VOLUME /azerothcore/env/dist/etc
 
 CMD ["worldserver"]
