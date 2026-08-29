@@ -1,0 +1,98 @@
+name: Playerbots container images
+
+on:
+  push:
+    branches:
+      - Playerbot
+    paths:
+      - ".github/workflows/playerbots-images.yml"
+      - ".gitmodules"
+      - "apps/docker/**"
+      - "apps/startup-scripts/**"
+      - "conf/**"
+      - "data/**"
+      - "deps/**"
+      - "modules/**"
+      - "src/**"
+      - "CMakeLists.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: playerbots-images-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_PREFIX: ghcr.io/ghazibendahmane/ac-playerbots
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free runner disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - name: Check out AzerothCore and Playerbots
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and publish worldserver
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/docker/Dockerfile
+          target: worldserver
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-worldserver:latest
+            ${{ env.IMAGE_PREFIX }}-worldserver:${{ github.sha }}
+          cache-from: type=gha,scope=playerbots-worldserver
+          cache-to: type=gha,mode=max,scope=playerbots-worldserver
+
+      - name: Build and publish authserver
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/docker/Dockerfile
+          target: authserver
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-authserver:latest
+            ${{ env.IMAGE_PREFIX }}-authserver:${{ github.sha }}
+          cache-from: |
+            type=gha,scope=playerbots-authserver
+            type=gha,scope=playerbots-worldserver
+          cache-to: type=gha,mode=max,scope=playerbots-authserver
+
+      - name: Build and publish db-import
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/docker/Dockerfile
+          target: db-import
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-db-import:latest
+            ${{ env.IMAGE_PREFIX }}-db-import:${{ github.sha }}
+          cache-from: |
+            type=gha,scope=playerbots-db-import
+            type=gha,scope=playerbots-authserver
+          cache-to: type=gha,mode=max,scope=playerbots-db-import
