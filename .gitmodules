@@ -38,3 +38,126 @@
 [submodule "modules/mod-junk-to-gold"]
 	path = modules/mod-junk-to-gold
 	url = https://github.com/noisiver/mod-junk-to-gold.git
+[submodule "modules/mod-cfbg"]
+	path = modules/mod-cfbg
+	url = https://github.com/azerothcore/mod-cfbg.git
+[submodule "modules/mod-world-chat"]
+	path = modules/mod-world-chat
+	url = https://github.com/azerothcore/mod-world-chat.git
+[submodule "modules/mod-account-achievements"]
+	path = modules/mod-account-achievements
+	url = https://github.com/azerothcore/mod-account-achievements.git
+[submodule "modules/mod-1v1-arena"]
+	path = modules/mod-1v1-arena
+	url = https://github.com/azerothcore/mod-1v1-arena.git
+[submodule "modules/mod-npc-services"]
+	path = modules/mod-npc-services
+	url = https://github.com/azerothcore/mod-npc-services.git
+[submodule "modules/mod-guildhouse"]
+	path = modules/mod-guildhouse
+	url = https://github.com/azerothcore/mod-guildhouse.git
+[submodule "modules/mod-reward-played-time"]
+	path = modules/mod-reward-played-time
+	url = https://github.com/azerothcore/mod-reward-played-time.git
+[submodule "modules/mod-reward-shop"]
+	path = modules/mod-reward-shop
+	url = https://github.com/azerothcore/mod-reward-shop.git
+[submodule "modules/mod-premium"]
+	path = modules/mod-premium
+	url = https://github.com/azerothcore/mod-premium.git
+[submodule "modules/mod-ptr-template"]
+	path = modules/mod-ptr-template
+	url = https://github.com/azerothcore/mod-ptr-template.git
+[submodule "modules/mod-npc-talent-template"]
+	path = modules/mod-npc-talent-template
+	url = https://github.com/azerothcore/mod-npc-talent-template.git
+[submodule "modules/mod-npc-enchanter"]
+	path = modules/mod-npc-enchanter
+	url = https://github.com/azerothcore/mod-npc-enchanter.git
+[submodule "modules/mod-npc-buffer"]
+	path = modules/mod-npc-buffer
+	url = https://github.com/azerothcore/mod-npc-buffer.git
+[submodule "modules/mod-npc-free-professions"]
+	path = modules/mod-npc-free-professions
+	url = https://github.com/azerothcore/mod-npc-free-professions.git
+[submodule "modules/mod-npc-all-mounts"]
+	path = modules/mod-npc-all-mounts
+	url = https://github.com/azerothcore/mod-npc-all-mounts.git
+[submodule "modules/mod-pvp-titles"]
+	path = modules/mod-pvp-titles
+	url = https://github.com/azerothcore/mod-pvp-titles.git
+[submodule "modules/mod-duel-reset"]
+	path = modules/mod-duel-reset
+	url = https://github.com/azerothcore/mod-duel-reset.git
+[submodule "modules/mod-money-for-kills"]
+	path = modules/mod-money-for-kills
+	url = https://github.com/azerothcore/mod-money-for-kills.git
+[submodule "modules/mod-gain-honor-guard"]
+	path = modules/mod-gain-honor-guard
+	url = https://github.com/azerothcore/mod-gain-honor-guard.git
+[submodule "modules/mod-instance-reset"]
+	path = modules/mod-instance-reset
+	url = https://github.com/azerothcore/mod-instance-reset.git
+[submodule "modules/mod-rdf-expansion"]
+	path = modules/mod-rdf-expansion
+	url = https://github.com/azerothcore/mod-rdf-expansion.git
+[submodule "modules/mod-skip-dk-starting-area"]
+	path = modules/mod-skip-dk-starting-area
+	url = https://github.com/azerothcore/mod-skip-dk-starting-area.git
+[submodule "modules/mod-weapon-visual"]
+	path = modules/mod-weapon-visual
+	url = https://github.com/azerothcore/mod-weapon-visual.git
+[submodule "modules/mod-random-enchants"]
+	path = modules/mod-random-enchants
+	url = https://github.com/azerothcore/mod-random-enchants.git
+[submodule "modules/mod-custom-login"]
+	path = modules/mod-custom-login
+	url = https://github.com/azerothcore/mod-custom-login.git
+[submodule "modules/mod-breaking-news-override"]
+	path = modules/mod-breaking-news-override
+	url = https://github.com/azerothcore/mod-breaking-news-override.git
+[submodule "modules/mod-congrats-on-level"]
+	path = modules/mod-congrats-on-level
+	url = https://github.com/azerothcore/mod-congrats-on-level.git
+[submodule "modules/mod-fireworks-on-level"]
+	path = modules/mod-fireworks-on-level
+	url = https://github.com/azerothcore/mod-fireworks-on-level.git
+[submodule "modules/mod-boss-announcer"]
+	path = modules/mod-boss-announcer
+	url = https://github.com/azerothcore/mod-boss-announcer.git
+[submodule "modules/mod-multi-client-check"]
+	path = modules/mod-multi-client-check
+	url = https://github.com/azerothcore/mod-multi-client-check.git
+[submodule "modules/mod-anticheat"]
+	path = modules/mod-anticheat
+	url = https://github.com/azerothcore/mod-anticheat.git
+[submodule "modules/mod-racial-trait-swap"]
+	path = modules/mod-racial-trait-swap
+	url = https://github.com/azerothcore/mod-racial-trait-swap.git
+[submodule "modules/mod-individual-xp"]
+	path = modules/mod-individual-xp
+	url = https://github.com/azerothcore/mod-individual-xp.git
+[submodule "modules/mod-challenge-modes"]
+	path = modules/mod-challenge-modes
+	url = https://github.com/ZhengPeiRu21/mod-challenge-modes.git
+[submodule "modules/mod-reagent-bank"]
+	path = modules/mod-reagent-bank
+	url = https://github.com/ZhengPeiRu21/mod-reagent-bank.git
+[submodule "modules/mod-flightmaster-whistle"]
+	path = modules/mod-flightmaster-whistle
+	url = https://github.com/silviu20092/mod-flightmaster-whistle.git
+[submodule "modules/mod-no-hearthstone-cooldown"]
+	path = modules/mod-no-hearthstone-cooldown
+	url = https://github.com/BytesGalore/mod-no-hearthstone-cooldown.git
+[submodule "modules/mod-fly-in-old-world"]
+	path = modules/mod-fly-in-old-world
+	url = https://github.com/Tralenor/mod-fly-in-old-world.git
+[submodule "modules/mod-dungeon-respawn"]
+	path = modules/mod-dungeon-respawn
+	url = https://github.com/AnchyDev/DungeonRespawn.git
+[submodule "modules/mod-dungeon-clear"]
+	path = modules/mod-dungeon-clear
+	url = https://github.com/jrad7/mod-dungeon-clear.git
+[submodule "modules/mod-player-bot-level-brackets"]
+	path = modules/mod-player-bot-level-brackets
+	url = https://github.com/DustinHendrickson/mod-player-bot-level-brackets.git
