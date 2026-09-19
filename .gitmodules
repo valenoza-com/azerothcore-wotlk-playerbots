@@ -14,9 +14,6 @@
 [submodule "modules/mod-learn-spells"]
 	path = modules/mod-learn-spells
 	url = https://github.com/azerothcore/mod-learn-spells.git
-[submodule "modules/mod-eluna"]
-	path = modules/mod-eluna
-	url = https://github.com/azerothcore/mod-eluna.git
 [submodule "modules/mod-transmog"]
 	path = modules/mod-transmog
 	url = https://github.com/azerothcore/mod-transmog.git
@@ -158,3 +155,6 @@
 [submodule "modules/mod-player-bot-level-brackets"]
 	path = modules/mod-player-bot-level-brackets
 	url = https://github.com/DustinHendrickson/mod-player-bot-level-brackets.git
+[submodule "modules/mod-ale"]
+	path = modules/mod-ale
+	url = https://github.com/azerothcore/mod-ale.git

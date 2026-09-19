@@ -76,6 +76,18 @@ COPY deps /azerothcore/deps
 COPY src /azerothcore/src
 COPY modules /azerothcore/modules
 
+# Downstream compatibility patch.
+# ZhengPeiRu21/mod-challenge-modes declares
+#   OnPlayerResurrect(Player*, float, bool)
+# but AzerothCore changed the third parameter to `bool&` in 117095f1c
+# (2026-04-15, "OnPlayerResurrect allow changing of applySickness"). Marking it
+# `override` against the new signature is a hard compile error, and the module
+# master has not picked up the fix yet (upstream PRs #63/#65 are still open).
+# The substitution is idempotent: once upstream matches, sed finds nothing and
+# this becomes a no-op. Drop this block when the fix lands upstream.
+RUN sed -i 's|bool /\*applySickness\*/|bool\& /*applySickness*/|g' \
+        /azerothcore/modules/mod-challenge-modes/src/ChallengeModes.cpp
+
 ARG CACHEBUST=1
 
 WORKDIR /azerothcore/build
