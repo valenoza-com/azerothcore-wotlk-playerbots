@@ -1,0 +1,187 @@
+--- a/modules/mod-npc-talent-template/src/npc_talent_template.cpp
++++ b/modules/mod-npc-talent-template/src/npc_talent_template.cpp
+@@ -3,9 +3,14 @@
+ #include "Chat.h"
+ #include "Config.h"
+ #include "Creature.h"
++#include "ObjectAccessor.h"
+ #include "ReputationMgr.h"
+ #include "ScriptedGossip.h"
+ #include "SpellMgr.h"
++#include "StringFormat.h"
++
++#include <algorithm>
++#include <cctype>
+ 
+ #define DEFAULT_GOSSIP_ACTION_ENTRY 9999 // default value for gossipAction when creating new template
+ 
+@@ -676,6 +681,11 @@
+         {
+             { "reload", HandleReloadTemplateNPCCommand, SEC_ADMINISTRATOR, Console::No },
+             { "create", HandleCreateClassSpecItemSetCommand, SEC_ADMINISTRATOR, Console::No },
++            // Console/SOAP reachable so an external store can apply a stored
++            // template to an online player.  Downstream addition, see
++            // apps/docker/patches/README.md
++            { "apply",  HandleApplyTemplateCommand, SEC_ADMINISTRATOR, Console::Yes },
++            { "list",   HandleListTemplatesCommand, SEC_ADMINISTRATOR, Console::Yes },
+         };
+ 
+         static ChatCommandTable commandTable =
+@@ -711,6 +721,157 @@
+         handler->SendGlobalGMSysMessage(handler->GetModuleString(MODULE_STRING, SUCCESS_NPC_TALENT_TEMPLATE_RELOADED)->c_str());
+         return true;
+     }
++
++    // ---------------------------------------------------------------------
++    // Downstream additions (see apps/docker/patches/README.md):
++    // console/SOAP reachable template apply + listing, so an external store
++    // (web portal) can sell a build and apply it to an online player.
++    // ---------------------------------------------------------------------
++
++    static std::string LowerCopy(std::string value)
++    {
++        std::transform(value.begin(), value.end(), value.begin(),
++                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
++        return value;
++    }
++
++    static std::string TrimCopy(std::string value)
++    {
++        std::size_t first = value.find_first_not_of(" \t\r\n");
++        if (first == std::string::npos)
++            return "";
++
++        std::size_t last = value.find_last_not_of(" \t\r\n");
++        return value.substr(first, last - first + 1);
++    }
++
++    static bool HandleApplyTemplateCommand(ChatHandler* handler, char const* args)
++    {
++        std::string input = TrimCopy(args ? args : "");
++        if (input.empty())
++        {
++            handler->SendSysMessage("Usage: .templatenpc apply \"<TemplateName>\" <PlayerName>");
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++
++        std::string templateName;
++        std::string playerName;
++
++        if (input.front() == '"')
++        {
++            std::size_t closeQuote = input.find('"', 1);
++            if (closeQuote == std::string::npos)
++            {
++                handler->SendSysMessage("Template NPC: unterminated template name.");
++                handler->SetSentErrorMessage(true);
++                return false;
++            }
++
++            templateName = input.substr(1, closeQuote - 1);
++            playerName = input.substr(closeQuote + 1);
++        }
++        else
++        {
++            std::size_t space = input.find(' ');
++            templateName = input.substr(0, space);
++            playerName = (space == std::string::npos) ? "" : input.substr(space + 1);
++        }
++
++        templateName = TrimCopy(templateName);
++
++        std::size_t first = playerName.find_first_not_of(" \t\"");
++        if (first == std::string::npos)
++            playerName.clear();
++        else
++        {
++            std::size_t last = playerName.find_last_not_of(" \t\"");
++            playerName = playerName.substr(first, last - first + 1);
++        }
++
++        if (templateName.empty() || playerName.empty())
++        {
++            handler->SendSysMessage("Usage: .templatenpc apply \"<TemplateName>\" <PlayerName>");
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++
++        Player* player = ObjectAccessor::FindPlayerByName(playerName);
++        if (!player)
++        {
++            handler->SendSysMessage("Template NPC: player '" + playerName + "' is not online.");
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++
++        std::string const className = sTemplateNpcMgr->GetClassString(player);
++        IndexTemplate* indexTemplate = nullptr;
++
++        for (auto const& candidate : sTemplateNpcMgr->indexContainer)
++        {
++            if (candidate && candidate->playerSpec == templateName && candidate->playerClass == className)
++            {
++                indexTemplate = candidate;
++                break;
++            }
++        }
++
++        if (!indexTemplate)
++        {
++            handler->SendSysMessage("Template NPC: no template '" + templateName + "' for " + className + ".");
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++
++        if ((indexTemplate->mask & TEMPLATE_APPLY_GEAR) && sTemplateNpcMgr->IsWearingAnyGear(player))
++        {
++            handler->SendSysMessage("Template NPC: " + player->GetName() + " must unequip all gear first.");
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++
++        if ((indexTemplate->mask & TEMPLATE_APPLY_TALENTS) && sTemplateNpcMgr->HasSpentTalentPoints(player))
++        {
++            handler->SendSysMessage("Template NPC: " + player->GetName() + " must reset talents first.");
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++
++        sTemplateNpcMgr->ApplyTemplate(player, indexTemplate);
++        handler->SendSysMessage("Template NPC: applied '" + templateName + "' to " + player->GetName() + ".");
++        return true;
++    }
++
++    static bool HandleListTemplatesCommand(ChatHandler* handler, char const* args)
++    {
++        std::string filter = LowerCopy(TrimCopy(args ? args : ""));
++        uint32 shown = 0;
++
++        for (auto const& candidate : sTemplateNpcMgr->indexContainer)
++        {
++            if (!candidate)
++                continue;
++
++            if (!filter.empty() && LowerCopy(candidate->playerClass).find(filter) == std::string::npos)
++                continue;
++
++            handler->SendSysMessage(Acore::StringFormat("{} | {} | {} | levels {}-{} | mask {}",
++                                                        candidate->playerClass, candidate->playerSpec,
++                                                        candidate->category, candidate->minLevel,
++                                                        candidate->maxLevel, static_cast<uint32>(candidate->mask)));
++            ++shown;
++        }
++
++        if (!shown)
++        {
++            handler->SendSysMessage("Template NPC: no template matched '" + filter + "'.");
++            handler->SetSentErrorMessage(true);
++            return false;
++        }
++
++        handler->SendSysMessage(Acore::StringFormat("Template NPC: {} template row(s).", shown));
++        return true;
++    }
+ };
+ 
+ class npc_talent_template_world : public WorldScript

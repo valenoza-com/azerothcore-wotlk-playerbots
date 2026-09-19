@@ -52,6 +52,15 @@ ARG CMODULES="static"
 ARG CSCRIPTS_DEFAULT_LINKAGE="static"
 ARG CWITH_WARNINGS="ON"
 ARG CMAKE_EXTRA_OPTIONS=""
+# Modules excluded from this server build. DISABLED_AC_MODULES alone is not
+# enough: GetModuleSourceList() in src/cmake/macros/ConfigureModules.cmake
+# globs modules/* on its own, so a static build still compiles every module
+# directory it finds. Removing the directories is what actually keeps them out
+# of the `modules` library; the cmake flag is kept for upstream parity.
+ARG CDISABLED_MODULES="mod-npc-beastmaster;mod-npc-all-mounts;mod-racial-trait-swap"
+# Number of parallel compile jobs. Empty means nproc+1 (CI default); pass
+# --build-arg CJOBS=8 on memory-constrained builders.
+ARG CJOBS=""
 ARG GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 
 ARG CCACHE_DIR="/ccache"
@@ -65,7 +74,7 @@ ARG CCACHE_LOGFILE=""
 RUN apt-get update                                                     \
     && apt-get install -y --no-install-recommends                         \
         build-essential ccache libtool cmake-data ninja-build cmake clang    \
-        git lsb-base curl unzip default-mysql-client openssl                  \
+        git lsb-base curl unzip default-mysql-client openssl patch            \
         default-libmysqlclient-dev libboost-all-dev libssl-dev libmysql++-dev \
         libreadline-dev zlib1g-dev libbz2-dev libncurses5-dev liblzma-dev  \
     && rm -rf /var/lib/apt/lists/*
@@ -75,6 +84,11 @@ COPY conf /azerothcore/conf
 COPY deps /azerothcore/deps
 COPY src /azerothcore/src
 COPY modules /azerothcore/modules
+
+RUN rm -rf \
+        /azerothcore/modules/mod-npc-beastmaster \
+        /azerothcore/modules/mod-npc-all-mounts \
+        /azerothcore/modules/mod-racial-trait-swap
 
 # Downstream compatibility patch.
 # ZhengPeiRu21/mod-challenge-modes declares
@@ -87,6 +101,16 @@ COPY modules /azerothcore/modules
 # this becomes a no-op. Drop this block when the fix lands upstream.
 RUN sed -i 's|bool /\*applySickness\*/|bool\& /*applySickness*/|g' \
         /azerothcore/modules/mod-challenge-modes/src/ChallengeModes.cpp
+
+# Downstream feature patch: mod-npc-talent-template only exposes its template
+# apply path through the gossip NPC (its commands are Console::No), so a web
+# portal cannot drive it over SOAP. The patch adds `.templatenpc apply|list`
+# with Console::Yes. See apps/docker/patches/README.md.
+COPY apps/docker/patches /tmp/ac-patches
+RUN for p in /tmp/ac-patches/*.patch; do \
+        patch -p1 -d /azerothcore --batch --forward < "$p"; \
+    done \
+    && rm -rf /tmp/ac-patches
 
 ARG CACHEBUST=1
 
@@ -107,6 +131,7 @@ RUN --mount=type=cache,target=/ccache,sharing=locked \
        -DTOOLS_BUILD="$CTOOLS_BUILD"                   \
        -DSCRIPTS="$CSCRIPTS"                           \
        -DMODULES="$CMODULES"                           \
+       -DDISABLED_AC_MODULES="$CDISABLED_MODULES"              \
        -DWITH_WARNINGS="$CWITH_WARNINGS"               \
        -DCMAKE_BUILD_TYPE="$CTYPE"                     \
        -DCMAKE_CXX_COMPILER="clang++"                  \
@@ -114,7 +139,7 @@ RUN --mount=type=cache,target=/ccache,sharing=locked \
        -DCMAKE_CXX_COMPILER_LAUNCHER="ccache"          \
        -DCMAKE_C_COMPILER_LAUNCHER="ccache"            \
        -DBoost_USE_STATIC_LIBS="ON"                    \
-    && cmake --build . --config "$CTYPE" -j $(($(nproc) + 1)) \
+    && cmake --build . --config "$CTYPE" -j "${CJOBS:-$(($(nproc) + 1))}" \
     && cmake --install . --config "$CTYPE"
 
 #############################
