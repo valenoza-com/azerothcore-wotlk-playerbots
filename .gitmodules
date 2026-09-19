@@ -152,9 +152,6 @@
 [submodule "modules/mod-fly-in-old-world"]
 	path = modules/mod-fly-in-old-world
 	url = https://github.com/Tralenor/mod-fly-in-old-world.git
-[submodule "modules/mod-dungeon-respawn"]
-	path = modules/mod-dungeon-respawn
-	url = https://github.com/AnchyDev/DungeonRespawn.git
 [submodule "modules/mod-dungeon-clear"]
 	path = modules/mod-dungeon-clear
 	url = https://github.com/jrad7/mod-dungeon-clear.git
