@@ -2,3 +2,39 @@
 	path = modules/mod-playerbots
 	url = https://github.com/mod-playerbots/mod-playerbots.git
 	branch = master
+[submodule "modules/mod-ah-bot"]
+	path = modules/mod-ah-bot
+	url = https://github.com/azerothcore/mod-ah-bot.git
+[submodule "modules/mod-autobalance"]
+	path = modules/mod-autobalance
+	url = https://github.com/azerothcore/mod-autobalance.git
+[submodule "modules/mod-weekendbonus"]
+	path = modules/mod-weekendbonus
+	url = https://github.com/noisiver/mod-weekendbonus.git
+[submodule "modules/mod-learn-spells"]
+	path = modules/mod-learn-spells
+	url = https://github.com/azerothcore/mod-learn-spells.git
+[submodule "modules/mod-eluna"]
+	path = modules/mod-eluna
+	url = https://github.com/azerothcore/mod-eluna.git
+[submodule "modules/mod-transmog"]
+	path = modules/mod-transmog
+	url = https://github.com/azerothcore/mod-transmog.git
+[submodule "modules/mod-solo-lfg"]
+	path = modules/mod-solo-lfg
+	url = https://github.com/azerothcore/mod-solo-lfg.git
+[submodule "modules/mod-individual-progression"]
+	path = modules/mod-individual-progression
+	url = https://github.com/ZhengPeiRu21/mod-individual-progression.git
+[submodule "modules/mod-npc-beastmaster"]
+	path = modules/mod-npc-beastmaster
+	url = https://github.com/azerothcore/mod-npc-beastmaster.git
+[submodule "modules/mod-account-mounts"]
+	path = modules/mod-account-mounts
+	url = https://github.com/azerothcore/mod-account-mounts.git
+[submodule "modules/mod-aoe-loot"]
+	path = modules/mod-aoe-loot
+	url = https://github.com/azerothcore/mod-aoe-loot.git
+[submodule "modules/mod-junk-to-gold"]
+	path = modules/mod-junk-to-gold
+	url = https://github.com/noisiver/mod-junk-to-gold.git
